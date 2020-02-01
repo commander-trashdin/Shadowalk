@@ -32,6 +32,7 @@
   ())
 
 
+
 (defclass skill (%skill)
   ())
 
