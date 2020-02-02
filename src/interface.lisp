@@ -31,25 +31,29 @@
 (defmacro defcharacter (name race &rest info)
   (type-safe (race-error) (assert (typep race 'races) nil
                                   'race-error :wrong-race race))
-  `(progn
-     (let ((this (make-instance 'creature :name (%sym-to-str ',name) :race ',race)))
-       ,@(loop :for (slot . (stats)) :in info
-               :collect
-               (case slot
-                 (stats (type-safe (malformed-creation)
-                                   (assert (typep stats '(%fixed-list fixnum 9)) nil 'malformed-creation :place stats))
-                  `(setf (values (str this) (agi this) (const this) (chr this) (per this)
-                                 (int this) (will this) (logic this) (react this))
-                         (values ,@stats)))
-                 (size `(setf (size this) ,stats))
-                 (skills `(loop :for skill-value :in stats
-                                :for skill :in *skills*
-                                :do (setf (gethash skill (skill-list this) skill-value))))
-                 (otherwise `(,slot ,(coerce stats 'vector) this))))
-       (max-health (+ 9 (const this) (* 4 (size this))) this)
-       (cur-health (max-health this) this)
-       (%init (+ (react this) (int this)) this)
-       (setf (gethash ',name *creatures*) this))))
+  (let ((%const 0) (%size 0) (%react 0) (%int 0))
+    `(progn
+       (let ((this (make-instance 'creature :name (%sym-to-str ',name) :race ',race)))
+         ,@(loop :for (slot . (stats)) :in info
+                 :collect
+                 (case slot
+                   (stats
+                    (type-safe (malformed-creation)
+                               (assert (typep stats '(%fixed-list fixnum 9)) nil 'malformed-creation :place stats))
+                    (destructuring-bind (str agi const chr per int will logic react) stats
+                      (setf %const const %react react %int int)
+                      `(setf (strength this) ,str (agility this) ,agi (constitution this) ,const (charisma this) ,chr
+                             (perception this) ,per (intuition this) ,int (will this) ,will
+                             (logic this) ,logic (reaction this) ,react)))
+                   (size (setf %size stats) `(setf (size this) ,stats))
+                   (skills `(loop :for skill-value :in stats
+                                  :for skill :in *skills*
+                                  :do (setf (gethash skill (skill-list this) skill-value))))
+                   (otherwise `(setf (,slot this) ,(coerce stats 'vector)))))
+         (setf (max-health this) ,(+ 9 %const (* 4 %size)))
+         (setf (cur-health this) ,(+ 9 %const (* 4 %size)))
+         (setf (initiative this) ,(+ %react %int))
+         (setf (gethash ',name *creatures*) this)))))
 
 
 
@@ -61,6 +65,7 @@
         (destructuring-bind (dice stat skill check) body
           `(progn
              (defun ,name (creature &optional modifier)
+               (declare (optimize (safety 3) (debug 3)))
                (%check-success (%roll :d ,dice :times (+ (,stat creature)
                                                          (get-skill creature :skill-name ',skill))
                                       :modifiers modifier) ,check))
