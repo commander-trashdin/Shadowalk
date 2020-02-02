@@ -139,3 +139,10 @@
       :initform (make-array 10 :element-type 'item
                                :initial-element (make-instance 'item)
                                :adjustable t :fill-pointer 0))))
+
+
+(defmethod print-object ((this creature) stream)
+  (print-unreadable-object (this stream :type t)
+    (princ (name this) stream)
+    (format stream ", ")
+    (princ (%sym-to-str (race this)) stream)))

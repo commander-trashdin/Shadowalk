@@ -21,6 +21,13 @@
 
 (in-package #:rpg)
 
+
+;;;-------------------------------------------------------------------
+;;; Interface
+;;;-------------------------------------------------------------------
+
+
+
 (defmacro defcharacter (name race &rest info)
   (type-safe (race-error) (assert (typep race 'races) nil
                                   'race-error :wrong-race race))
@@ -46,20 +53,17 @@
 
 
 
-(defmethod print-object ((this creature) stream)
-  (print-unreadable-object (this stream :type t)
-    (princ (name this) stream)
-    (format stream ", ")
-    (princ (%sym-to-str (race this)) stream)))
-
-
-(defmacro make-action (name creature &body body)
+(defmacro make-action (name creature &key modifier body)
   (if (gethash name *actions*)
-      `(,name ,(gethash creature *creatures*))
+      `(,name ,(gethash creature *creatures*) ,modifier)
       (progn
         (warn "A new action ~s is being defined" (%sym-to-str name))
-        `(progn
-           (defun ,name (creature)
-             ,@body)
-           (setf  (gethash ',name *actions*) (%sym-to-str ',name))
-           (,name ,(gethash creature *creatures*))))))
+        (destructuring-bind (dice stat skill check) body
+          `(progn
+             (defun ,name (creature &optional modifier)
+               (%check-success (%roll :d ,dice :times (+ (,stat creature)
+                                                         (get-skill creature :skill-name ',skill))
+                                      :modifiers modifier) ,check))
+             (declaim (ftype (function (creature) fixnum) ,name))
+             (setf  (gethash ',name *actions*) (%sym-to-str ',name))
+             (,name ,(gethash creature *creatures*) ,modifier))))))

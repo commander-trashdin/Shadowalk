@@ -21,7 +21,7 @@
 (in-package #:rpg)
 
 
-(defmacro %defclass (name super decl (&rest slots))
+(defmacro %defclass (name super decl slots)
   `(progn
      (defclass ,name ,super
        ,slots)
@@ -38,19 +38,8 @@
                       :collect `(ftype (function (,type ,name) ,type) (setf ,sl-name))))))
 
 
-(%defclass foo ()
-    (declare (optimize (safety 3) (debug 3)))
-    ((a
-      :type fixnum
-      :initform 1)
-     (b
-      :type string)))
-
-
-
 (deftype %fixed-list (type length)
   `(cons ,type ,(if (= length 1) `null `(%fixed-list ,type ,(1- length)))))
-
 
 
 (declaim (ftype (function (symbol) simple-string) %sym-to-str))
@@ -76,7 +65,7 @@
 
 
 
-(declaim (ftype (function ((and list (not null)) fixnum) fixnum) check-success))
+(declaim (ftype (function ((and list (not null)) fixnum) fixnum) %check-success))
 (defun %check-success (list border)
   (declare (optimize (safety 3) (debug 3)))
   (loop :for d :of-type fixnum :in list
@@ -142,6 +131,10 @@
   (declare (optimize (safety 3) (debug 3)))
   (gethash skill-name (skill-list creature)))
 
+
+;;;-------------------------------------------------------------------
+;;; Errors section
+;;;-------------------------------------------------------------------
 
 
 
