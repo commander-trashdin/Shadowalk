@@ -31,26 +31,26 @@
                (case slot
                  (stats (type-safe (malformed-creation)
                                    (assert (typep stats '(%fixed-list fixnum 9)) nil 'malformed-creation :place stats))
-                  `(setf (values (get-str this) (get-agi this) (get-const this) (get-chr this) (get-per this)
-                                 (get-int this) (get-will this) (get-logic this) (get-react this))
+                  `(setf (values (str this) (agi this) (const this) (chr this) (per this)
+                                 (int this) (will this) (logic this) (react this))
                          (values ,@stats)))
                  (size `(setf (size this) ,stats))
                  (skills `(loop :for skill-value :in stats
                                 :for skill :in *skills*
-                                :do (setf (gethash skill (get-skill-list this) skill-value))))
+                                :do (setf (gethash skill (skill-list this) skill-value))))
                  (otherwise `(,slot ,(coerce stats 'vector) this))))
-       (max-health (+ 9 (get-const this) (* 4 (size this))) this)
-       (cur-health (get-max-health this) this)
-       (%init (+ (get-react this) (get-int this)) this)
+       (max-health (+ 9 (const this) (* 4 (size this))) this)
+       (cur-health (max-health this) this)
+       (%init (+ (react this) (int this)) this)
        (setf (gethash ',name *creatures*) this))))
 
 
 
 (defmethod print-object ((this creature) stream)
   (print-unreadable-object (this stream :type t)
-    (princ (get-name this) stream)
+    (princ (name this) stream)
     (format stream ", ")
-    (princ (%sym-to-str (get-race this)) stream)))
+    (princ (%sym-to-str (race this)) stream)))
 
 
 (defmacro make-action (name creature &body body)

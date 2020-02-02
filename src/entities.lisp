@@ -48,128 +48,94 @@
 (defclass item (%inanimate)
   ())
 
-
-(defclass creature (%animate)
-  ((name
-    :type string
-    :initarg :name
-    :reader get-name
-    :writer name)
-   (race
-    :type 'races
-    :initarg :race
-    :reader get-race
-    :writer race)
-   (size
-    :type (integer -2 5)
-    :initform 0
-    :accessor size)
-   (strength
-    :type (integer 1 100)
-    :initarg :str
-    :initform 1
-    :accessor get-str)
-   (agility
-    :type (integer 1 100)
-    :initarg :agi
-    :initform 1
-    :accessor get-agi)
-   (constitution
-    :type (integer 1 100)
-    :initarg :const
-    :initform 1
-    :accessor get-const)
-   (charisma
-    :type (integer 1 100)
-    :initarg :chr
-    :initform 1
-    :accessor get-chr)
-   (perception
-    :type (integer 1 100)
-    :initarg :per
-    :initform 1
-    :accessor get-per)
-   (intuition
-    :type (integer 1 100)
-    :initarg :int
-    :initform 1
-    :accessor get-int)
-   (will
-    :type (integer 1 100)
-    :initarg :will
-    :initform 1
-    :accessor get-will)
-   (logic
-    :type (integer 1 100)
-    :initarg :logic
-    :initform 1
-    :accessor get-logic)
-   (reaction
-    :type (integer 1 100)
-    :initarg :react
-    :initform 1
-    :accessor get-react)
-   (fatigue
-    :type (integer 0 200)
-    :initarg :fat
-    :initform 0
-    :reader get-fat
-    :writer fat)
-   (max-health
-    :type (integer 1 1000)
-    :initarg :max-health
-    :initform 1
-    :reader get-max-health
-    :writer max-health)
-   (cur-health
-    :type (integer -100 1000)
-    :initarg :cur-health
-    :initform 1
-    :reader get-cur-health
-    :writer cur-health)
-   (initiative
-    :type (integer 0 100)
-    :initform 0
-    :reader get-init
-    :writer %init)
-   (status-effects
-    :type hash-table
-    :initform (make-hash-table :test 'eq)
-    :accessor status)
-   (magic-levels
-    :type list
-    :initform '(:fire 0 :water 0 :air 0 :earth 0 :astral 0 :death 0 :nature 0 :blood 0 :holy 0)
-    :accessor magic-levels)
-   (skill-list
-    :type hash-table
-    :initform (%skill-list)
-    :reader get-skill-list
-    :writer skills)
-   (feat-list
-    :type (vector feat *)
-    :initform (make-array 1 :element-type 'feat
-                            :initial-element (make-instance 'feat)
-                            :adjustable t :fill-pointer 0)
-    :reader get-feat-list
-    :writer feats)
-   (trait-list
-    :type (vector trait *)
-    :initform (make-array 1 :element-type 'trait
-                            :initial-element (make-instance 'trait)
-                            :adjustable t :fill-pointer 0)
-    :reader get-trait-list
-    :writer traits)
-   (drawback-list
-    :type (vector drawback *)
-    :initform (make-array 1 :element-type 'drawback
-                            :initial-element (make-instance 'drawback)
-                            :adjustable t :fill-pointer 0)
-    :reader get-drawback-list
-    :writer drawbacks)
-   (inventory
-    :type (vector item *)
-    :initform (make-array 10 :element-type 'item
-                            :initial-element (make-instance 'item)
-                            :adjustable t :fill-pointer 0)
-    :reader get-inv
-    :writer items)))
+(%defclass creature (%animate)
+    (declare (optimize (safety 3) (debug 3)))
+    ((name
+      :type string
+      :initarg :name)
+     (race
+      :type races
+      :initarg :race)
+     (size
+      :type (integer -2 5)
+      :initform 0)
+     (strength
+      :type (integer 1 100)
+      :initarg :str
+      :initform 1)
+     (agility
+      :type (integer 1 100)
+      :initarg :agi
+      :initform 1)
+     (constitution
+      :type (integer 1 100)
+      :initarg :const
+      :initform 1)
+     (charisma
+      :type (integer 1 100)
+      :initarg :chr
+      :initform 1)
+     (perception
+      :type (integer 1 100)
+      :initarg :per
+      :initform 1)
+     (intuition
+      :type (integer 1 100)
+      :initarg :int
+      :initform 1)
+     (will
+      :type (integer 1 100)
+      :initarg :will
+      :initform 1)
+     (logic
+      :type (integer 1 100)
+      :initarg :logic
+      :initform 1)
+     (reaction
+      :type (integer 1 100)
+      :initarg :react
+      :initform 1)
+     (fatigue
+      :type (integer 0 200)
+      :initarg :fat
+      :initform 0)
+     (max-health
+      :type (integer 1 1000)
+      :initarg :max-health
+      :initform 1)
+     (cur-health
+      :type (integer -100 1000)
+      :initarg :cur-health
+      :initform 1)
+     (initiative
+      :type (integer 0 100)
+      :initform 0)
+     (status-effects
+      :type hash-table
+      :initform (make-hash-table :test 'eq))
+     (magic-levels
+      :type list
+      :initform '(:fire 0 :water 0 :air 0 :earth 0 :astral 0 :death 0 :nature 0 :blood 0 :holy 0))
+     (skill-list
+      :type hash-table
+      :initform (%skill-list))
+     (feat-list
+      :type (vector feat *)
+      :initform (make-array 1 :element-type 'feat
+                              :initial-element (make-instance 'feat)
+                              :adjustable t :fill-pointer 0))
+     (trait-list
+      :type (vector trait *)
+      :initform (make-array 1 :element-type 'trait
+                              :initial-element (make-instance 'trait)
+                              :adjustable t :fill-pointer 0))
+     (drawback-list
+      :type (vector drawback *)
+      :initform (make-array 1 :element-type 'drawback
+                              :initial-element (make-instance 'drawback)
+                              :adjustable t :fill-pointer 0))
+     (inventory
+      :type (vector item *)
+      :initform (make-array 10 :element-type 'item
+                               :initial-element (make-instance 'item)
+                               :adjustable t :fill-pointer 0))))

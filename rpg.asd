@@ -9,8 +9,8 @@
   :components ((:file "package")
                (:module "src"
                 :components
-                ((:file "world-state")
-                 (:file "utils")
+                ((:file "utils")
+                 (:file "world-state")
                  (:file "entities")
                  (:file "interface")))
                (:module "log")))

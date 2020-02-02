@@ -21,6 +21,31 @@
 (in-package #:rpg)
 
 
+(defmacro %defclass (name super decl (&rest slots))
+  `(progn
+     (defclass ,name ,super
+       ,slots)
+     ,@(loop :for (sl-name . rest) :in slots
+             :collect `(defun ,sl-name (,name)
+                         ,decl
+                         (slot-value ,name ',sl-name))
+             :collect `(defun (setf ,sl-name) (new-val ,name)
+                         ,decl
+                         (setf (slot-value ,name ',sl-name) new-val)))
+     (declaim ,@(loop :for (sl-name . rest) :in slots
+                      :for type := (getf rest :type t)
+                      :collect `(ftype (function (,name) ,type) ,sl-name)
+                      :collect `(ftype (function (,type ,name) ,type) (setf ,sl-name))))))
+
+
+(%defclass foo ()
+    (declare (optimize (safety 3) (debug 3)))
+    ((a
+      :type fixnum
+      :initform 1)
+     (b
+      :type string)))
+
 
 
 (deftype %fixed-list (type length)
@@ -69,14 +94,14 @@
    skill-list))
 
 (defun %display (this stream)
-  (format stream "Name: ~a~%" (get-name this))
-  (format stream "Race:~a, size ~s~%" (%sym-to-str (get-race this)) (size this))
-  (format stream "Combat stats: Strength ~s, Agility ~s, Constitution ~s~%" (get-str this) (get-agi this) (get-const this))
-  (format stream "Cunning stats: Charisma ~s, Intuition ~s, Perception ~s~%" (get-chr this) (get-int this) (get-per this))
-  (format stream "Intelligence stats: Will ~s, Logic ~s, Reaction ~s~%" (get-will this) (get-logic this) (get-react this))
-  (format stream "Health: ~s/~s~%" (get-cur-health this) (get-max-health this))
-  (format stream "Fatigue: ~s~%" (get-fat this))
-  (format stream "Initiative:~s~%" (get-init this))
+  (format stream "Name: ~a~%" (name this))
+  (format stream "Race:~a, size ~s~%" (%sym-to-str (race this)) (size this))
+  (format stream "Combat stats: Strength ~s, Agility ~s, Constitution ~s~%" (str this) (agi this) (const this))
+  (format stream "Cunning stats: Charisma ~s, Intuition ~s, Perception ~s~%" (chr this) (int this) (per this))
+  (format stream "Intelligence stats: Will ~s, Logic ~s, Reaction ~s~%" (will this) (logic this) (react this))
+  (format stream "Health: ~s/~s~%" (cur-health this) (max-health this))
+  (format stream "Fatigue: ~s~%" (fat this))
+  (format stream "Initiative:~s~%" (init this))
   (maphash (lambda (key value) (%print-status-effect key value stream)) (status this))
   (loop :initially (format stream "Magic levels:~%")
         :for stuff :in (magic-levels this)
@@ -86,25 +111,25 @@
           :do (format stream "~s~%" stuff))
   (loop :initially (format stream "Skills:~%")
         :for i :from 1 :to 32
-        :for skill being each hash-key of (get-skill-list this)
+        :for skill being each hash-key of (skill-list this)
           :using (hash-value v)
         :do (format stream "~a: ~s, " (%sym-to-str skill) v)
         :when (zerop (rem i 8))
           :do (format stream "~%"))
   (loop :initially (format stream "Feats:~%")
-        :for feat :across (get-feat-list this)
+        :for feat :across (feat-list this)
         :do (format stream "~a, " feat)
         :finally (format stream "~%"))
   (loop :initially (format stream "Traits:~%")
-        :for trait :across (get-trait-list this)
+        :for trait :across (trait-list this)
         :do (format stream "~a, " trait)
         :finally (format stream "~%"))
   (loop :initially (format stream "Drawbacks:~%")
-        :for db :across (get-drawback-list this)
+        :for db :across (drawback-list this)
         :do (format stream "~a, " db)
         :finally (format stream "~%"))
   (loop :initially (format stream "Inventory:~%")
-        :for item :across (get-inv this)
+        :for item :across (inv this)
         :do (format stream "~a, " item)
         :finally (format stream "~%")))
 
@@ -115,7 +140,7 @@
 (declaim (ftype (function (creature &key (:skill-name symbol)) fixnum) get-skill))
 (defun get-skill (creature &key skill-name)
   (declare (optimize (safety 3) (debug 3)))
-  (gethash skill-name (get-skill-list creature)))
+  (gethash skill-name (skill-list creature)))
 
 
 
