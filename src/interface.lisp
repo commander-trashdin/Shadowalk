@@ -54,6 +54,10 @@
          (setf (cur-health this) ,(+ 9 %const (* 4 %size)))
          (setf (initiative this) ,(+ %react %int))
          (setf (gethash ',name *creatures*) this)))))
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6d0a941d9b0f9409c8734303e8237dd09793d91d
 
 
 
