@@ -57,17 +57,22 @@
 
 
 (defmacro make-action (name creature &key modifier body)
-  (if (gethash name *actions*)
-      `(,name ,(gethash creature *creatures*) ,modifier)
+  (if body
       (progn
-        (warn "A new action ~s is being defined" (%sym-to-str name))
-        (destructuring-bind (dice stat skill check) body
-          `(progn
-             (defun ,name (creature &optional modifier)
-               (declare (optimize (safety 3) (debug 3)))
-               (%check-success (%roll :d ,dice :times (+ (,stat creature)
-                                                         (get-skill creature :skill-name ',skill))
-                                      :modifiers modifier) ,check))
-             (declaim (ftype (function (creature) fixnum) ,name))
-             (setf  (gethash ',name *actions*) (%sym-to-str ',name))
-             (,name ,(gethash creature *creatures*) ,modifier))))))
+        (if (gethash name *actions*)
+            (warn "An action ~s is being redefined" (%sym-to-str name))
+            (warn "A new action ~s is being defined" (%sym-to-str name)))
+        (progn
+          (destructuring-bind (dice stat skill check) body
+            `(progn
+               (defun ,name (creature &optional modifier)
+                 (declare (optimize (safety 3) (debug 3)))
+                 (%check-success (%roll :d ,dice :times (+ (,stat creature)
+                                                           (get-skill creature :skill-name ',skill))
+                                        :modifiers modifier) ,check))
+               (declaim (ftype (function (creature &optional fixnum) fixnum) ,name))
+               (setf  (gethash ',name *actions*) (%sym-to-str ',name))
+               (,name ,(gethash creature *creatures*) ,modifier)))))
+      (if (gethash name *actions*)
+          `(,name ,(gethash creature *creatures*) ,modifier)
+          `(error "No such action."))))
