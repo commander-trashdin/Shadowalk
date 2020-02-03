@@ -80,6 +80,6 @@
                (declaim (ftype (function (creature &optional fixnum) fixnum) ,name))
                (setf  (gethash ',name *actions*) (%sym-to-str ',name))
                (,name ,(gethash creature *creatures*) ,modifier)))))
-      (if (gethash name *actions*)
-          `(,name ,(gethash creature *creatures*) ,modifier)
-          `(error "No such action."))))
+      (progn
+          (assert (typep name 'skill) nil 'malformed-action :place "It does not exist!")
+          `(,name ,(gethash creature *creatures*) ,modifier))))
