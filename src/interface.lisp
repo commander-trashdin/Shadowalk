@@ -42,9 +42,9 @@
                                (assert (typep stats '(%fixed-list fixnum 9)) nil 'malformed-creation :place stats))
                     (destructuring-bind (str agi const chr per int will logic react) stats
                       (setf %const const %react react %int int)
-                      `(setf (str this) ,str (agi this) ,agi (const this) ,const (chr this) ,chr
-                             (per this) ,per (int this) ,int (will this) ,will
-                             (logic this) ,logic (react this) ,react)))
+                      `(setf (strength this) ,str (agility this) ,agi (constitution this) ,const (charisma this) ,chr
+                             (perception this) ,per (intuition this) ,int (will this) ,will
+                             (logic this) ,logic (reaction this) ,react)))
                    (size (setf %size stats) `(setf (size this) ,stats))
                    (skills `(loop :for skill-value :in stats
                                   :for skill :in *skills*
@@ -52,8 +52,9 @@
                    (otherwise `(setf (,slot this) ,(coerce stats 'vector)))))
          (setf (max-health this) ,(+ 9 %const (* 4 %size)))
          (setf (cur-health this) ,(+ 9 %const (* 4 %size)))
-         (setf (%init this) ,(+ %react %int))
+         (setf (initiative this) ,(+ %react %int))
          (setf (gethash ',name *creatures*) this)))))
+
 
 
 
