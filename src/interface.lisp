@@ -64,22 +64,27 @@
 
 
 (defmacro make-action (name creature &key modifier body)
-  (if body
-      (progn
-        (if (gethash name *actions*)
-            (warn "An action ~s is being redefined" (%sym-to-str name))
-            (warn "A new action ~s is being defined" (%sym-to-str name)))
-        (progn
-          (destructuring-bind (dice stat skill check) body
-            `(progn
-               (defun ,name (creature &optional modifier)
-                 (declare (optimize (safety 3) (debug 3)))
-                 (%check-success (%roll :d ,dice :times (+ (,stat creature)
-                                                           (get-skill creature :skill-name ',skill))
-                                        :modifiers modifier) ,check))
-               (declaim (ftype (function (creature &optional fixnum) fixnum) ,name))
-               (setf  (gethash ',name *actions*) (%sym-to-str ',name))
-               (,name ,(gethash creature *creatures*) ,modifier)))))
-      (progn
-          (assert (typep name 'skill) nil 'malformed-action :place "It does not exist!")
-          `(,name ,(gethash creature *creatures*) ,modifier))))
+  (type-safe (malformed-action entity-not-found)
+             (progn
+               (assert (gethash creature *creatures*) nil 'entity-not-found :entity (%sym-to-str creature))
+               (if body
+                   (progn
+                     (if (gethash name *actions*)
+                         (warn "An action ~s is being redefined" (%sym-to-str name))
+                         (warn "A new action ~s is being defined" (%sym-to-str name)))
+                     (progn
+                       (assert (typep body '(%tuple fixnum symbol skill fixnum)) nil
+                               'malformed-action :place "Incorrect implementation")
+                       (destructuring-bind (dice stat skill check) body
+                         `(progn
+                            (defun ,name (creature &optional modifier)
+                              (declare (optimize (safety 3) (debug 3)))
+                              (%check-success (%roll :d ,dice :times (+ (,stat creature)
+                                                                        (get-skill creature :skill-name ',skill))
+                                                     :modifiers modifier) ,check))
+                            (declaim (ftype (function (creature &optional fixnum) fixnum) ,name))
+                            (setf  (gethash ',name *actions*) (%sym-to-str ',name))
+                            (,name ,(gethash creature *creatures*) ,modifier)))))
+                   (progn
+                     (assert (gethash name *actions*) nil 'malformed-action :place "It does not exist!")
+                     `(,name ,(gethash creature *creatures*) ,modifier))))))

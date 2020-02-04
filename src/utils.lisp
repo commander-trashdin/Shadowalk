@@ -41,6 +41,12 @@
 (deftype %fixed-list (type length)
   `(cons ,type ,(if (= length 1) `null `(%fixed-list ,type ,(1- length)))))
 
+(deftype %tuple (&rest types)
+  (if types
+      (destructuring-bind (head . tail) types
+        `(cons ,head ,(if tail `(%tuple ,@tail) `null)))
+      `null))
+
 
 (declaim (ftype (function (symbol) simple-string) %sym-to-str))
 (defun %sym-to-str (name)
@@ -84,7 +90,7 @@
 
 (defun %display (this &optional (stream *standard-output*))
   (format stream "Name: ~a~%" (name this))
-  (format stream "Race:~a, size ~s~%" (%sym-to-str (race this)) (size this))
+  (format stream "Race: ~a of size ~s~%" (%sym-to-str (race this)) (size this))
   (format stream "Combat stats: Strength ~s, Agility ~s, Constitution ~s~%" (strength this) (agility this) (constitution this))
   (format stream "Cunning stats: Charisma ~s, Intuition ~s, Perception ~s~%" (charisma this) (intuition this) (perception this))
   (format stream "Intelligence stats: Will ~s, Logic ~s, Reaction ~s~%" (will this) (logic this) (reaction this))
@@ -95,10 +101,10 @@
   (loop :initially (format stream "Magic levels:~%")
         :for stuff :in (magic-levels this)
         :if (keywordp stuff)
-          :do (format stream "  ~a:" (%sym-to-str stuff))
+          :do (format stream "~a:" (%sym-to-str stuff))
         :else
-          :do (format stream "~s~%" stuff))
-  (loop :initially (format stream "Skills:~%")
+          :do (format stream "~s, " stuff))
+  (loop :initially (format stream "~%Skills:~%")
         :for i :from 1 :to 32
         :for skill being each hash-key of (skill-list this)
           :using (hash-value v)
@@ -170,7 +176,25 @@
       ;(declare (ignore condition))
       (format stream "~%Such abomination is now allowed to exist. Fix this ~%~a~%immidiately!~%" (place condition)))))
 
+(define-condition malformed-action (type-error)
+  ((place
+     :initarg :place
+     :reader place
+     :documentation "Can be anything"))
+  (:report
+    (lambda (condition stream)
+      ;(declare (ignore condition))
+      (format stream "~%This action can not be made under any circumstances. Reason:~%~a~%" (place condition)))))
 
+(define-condition entity-not-found (type-error)
+  ((entity
+     :initarg :entity
+     :reader entity
+     :documentation "That, what was not found"))
+  (:report
+    (lambda (condition stream)
+      ;(declare (ignore condition))
+      (format stream "Entity not found: ~a~%" (entity condition)))))
 
 
 (defmacro type-safe (list body)
@@ -183,7 +207,7 @@
                                     (format t "~a~%" e)
                                     (abort)))
             (list `(type-error
-                    (format t "Something unregistered is messed up.~%")
+                    (format t "The definition is broken in a weird way.~%")
                     (abort))
                   `(otherwise
                     (format t "Something is very wrong~%"))))))))

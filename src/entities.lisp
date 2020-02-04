@@ -33,19 +33,18 @@
 
 
 
-(defclass skill (%skill)
+(deftype skill () `(member ,@*skills*))
+
+(defclass feat ()
   ())
 
-(defclass feat (%skill)
+(defclass trait ()
   ())
 
-(defclass trait (%skill)
+(defclass drawback ()
   ())
 
-(defclass drawback (%skill)
-  ())
-
-(defclass item (%inanimate)
+(defclass item ()
   ())
 
 (%defclass creature (%animate)
