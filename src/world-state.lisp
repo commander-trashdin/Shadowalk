@@ -21,8 +21,9 @@
 (in-package #:rpg)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter *session-log* (concatenate 'string (directory-namestring *system-place*) "log/session-log.lisp"))
   (defparameter *system-place* (asdf:system-source-directory 'rpg))
-  (defparameter *races* (%read-log (concatenate 'string (directory-namestring *system-place*) "/log/races.log")))
+  (defparameter *races* (%read-log (concatenate 'string (directory-namestring *system-place*) "log/races.log")))
   (defparameter *creatures* (make-hash-table :test 'eq))
   (defparameter *items* (make-hash-table :test 'eq))
   (defparameter *actions* (make-hash-table :test 'eq))

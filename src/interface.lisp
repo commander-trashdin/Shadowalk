@@ -28,7 +28,7 @@
 
 
 
-(defmacro defcharacter (name race &rest info)
+(defmacro %defcharacter (name race &rest info)
   (type-safe (race-error) (assert (typep race 'races) nil
                                   'race-error :wrong-race race))
   (let ((%const 0) (%size 0) (%react 0) (%int 0))
@@ -53,9 +53,10 @@
                               (skills
                                (assert (typep stats '(cons list null)) nil 'malformed-creation :place (car stats))
                                `(progn
-                                  ,@(loop :for skill-value :of-type fixnum :in (car stats)
-                                          :for skill :in *skills*
-                                          :collect `(setf (gethash ',skill (skill-list this)) ,skill-value))))
+                                  ,@(loop :for skill :in *skills*
+                                          :for cur := (getf (car stats) (symbol->keyword skill))
+                                          :when cur
+                                            :collect `(setf (gethash ',skill (skill-list this)) ,cur))))
                               (otherwise `(setf (,slot this) ,(coerce (car stats) 'vector)))))
                     (setf (max-health this) ,(+ 9 %const (* 4 %size)))
                     (setf (cur-health this) ,(+ 9 %const (* 4 %size)))
@@ -63,7 +64,8 @@
                     (setf (gethash ',name *creatures*) this))))))
 
 
-(defmacro make-action (name creature &key modifier body)
+(defun %make-action (name creature &key (modifier 0) body)
+  (declare (optimize (safety 3) (debug 3)))
   (type-safe (malformed-action entity-not-found)
              (progn
                (assert (gethash creature *creatures*) nil 'entity-not-found :entity (%sym-to-str creature))
@@ -76,15 +78,49 @@
                        (assert (typep body '(%tuple fixnum symbol skill fixnum)) nil
                                'malformed-action :place "Incorrect implementation")
                        (destructuring-bind (dice stat skill check) body
-                         `(progn
-                            (defun ,name (creature &optional modifier)
-                              (declare (optimize (safety 3) (debug 3)))
-                              (%check-success (%roll :d ,dice :times (+ (,stat creature)
-                                                                        (get-skill creature :skill-name ',skill))
-                                                     :modifiers modifier) ,check))
-                            (declaim (ftype (function (creature &optional fixnum) fixnum) ,name))
-                            (setf  (gethash ',name *actions*) (%sym-to-str ',name))
-                            (,name ,(gethash creature *creatures*) ,modifier)))))
+                         (let ((definition
+                                 `(defun ,name (creature &optional modifier)
+                                    (declare (optimize (safety 3) (debug 3)))
+                                    (%check-success (%roll :d ,dice :times (+ (,stat creature)
+                                                                              (get-skill creature :skill-name ,skill))
+                                                           :modifiers modifier) ,check)))
+                               (ftype-decl
+                                 `(declaim (ftype (function (creature &optional fixnum) fixnum) ,name)))
+                               (action-add
+                                 `(setf  (gethash ,name *actions*) (%sym-to-str ,name)))
+                               (action-call
+                                 `(,name ,(gethash creature *creatures*) ,modifier)))
+                           (values
+                            `(progn
+                               ,definition
+                               ,ftype-decl
+                               ,action-add
+                               ,action-call)
+                            definition
+                            ftype-decl
+                            action-add
+                            action-call)))))
                    (progn
                      (assert (gethash name *actions*) nil 'malformed-action :place "It does not exist!")
                      `(,name ,(gethash creature *creatures*) ,modifier))))))
+
+
+(defmacro defcharacter (name race &rest info)
+  `(prog1
+       (%defcharacter ,name ,race ,@info)
+     (add-to-log (format nil "~%;;A new character ~a of ~a~p is born"
+                         (%sym-to-str ',name) (%sym-to-str ',race) 10))
+     (add-to-log '(%defcharacter ,name ,race ,@info))))
+
+
+;;; this doesn't work atm
+#||
+(defmacro make-action (name creature &key modifier body)
+  (multiple-value-bind (evaluation definition ftype-decl action-add action-call)
+      (%make-action name creature :modifier modifier :body body)
+    `(let ((res ,evaluation))
+       (add-to-log (format nil "~%;;~a performs an action: ~a with result(s): ~s~%"
+                           ,(%sym-to-str creature) ,(%sym-to-str name) res))
+       (add-to-log '(%make-action ,name ,creature :modifier ,modifier :body ,body))
+       res)))
+||#

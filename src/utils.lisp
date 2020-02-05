@@ -48,6 +48,15 @@
       `null))
 
 
+(defun symbol->keyword (symb)
+  (intern (symbol-name symb) "KEYWORD"))
+
+
+(defun add-to-log (&rest info)
+  (with-open-file (stream *session-log* :direction :output :if-does-not-exist :create :if-exists :append)
+    (loop :for thing :in info
+          :do (format stream "~a~%" thing))))
+
 (declaim (ftype (function (symbol) simple-string) %sym-to-str))
 (defun %sym-to-str (name)
   (declare (optimize (safety 3) (debug 3)))
@@ -74,8 +83,10 @@
 (declaim (ftype (function ((and list (not null)) fixnum) fixnum) %check-success))
 (defun %check-success (list border)
   (declare (optimize (safety 3) (debug 3)))
-  (loop :for d :of-type fixnum :in list
-        :count (>= d border)))
+  (let ((res (loop :for d :of-type fixnum :in list
+                    :count (>= d border))))
+    (format t "Check of ~s dices vs ~s resulted in:~%" list border)
+    res))
 
 (defun %print-status-effect (key value stream)
   (declare (optimize (safety 3) (debug 3)))
@@ -89,6 +100,8 @@
    skill-list))
 
 (defun %display (this &optional (stream *standard-output*))
+  (if (symbolp this)
+      (setf this (gethash this *creatures*)))
   (format stream "Name: ~a~%" (name this))
   (format stream "Race: ~a of size ~s~%" (%sym-to-str (race this)) (size this))
   (format stream "Combat stats: Strength ~s, Agility ~s, Constitution ~s~%" (strength this) (agility this) (constitution this))
