@@ -82,12 +82,12 @@
                                  `(defun ,name (creature &optional modifier)
                                     (declare (optimize (safety 3) (debug 3)))
                                     (%check-success (%roll :d ,dice :times (+ (,stat creature)
-                                                                              (get-skill creature :skill-name ,skill))
+                                                                              (get-skill creature :skill-name ',skill))
                                                            :modifiers modifier) ,check)))
                                (ftype-decl
                                  `(declaim (ftype (function (creature &optional fixnum) fixnum) ,name)))
                                (action-add
-                                 `(setf  (gethash ,name *actions*) (%sym-to-str ,name)))
+                                 `(setf  (gethash ',name *actions*) ,(%sym-to-str name)))
                                (action-call
                                  `(,name ,(gethash creature *creatures*) ,modifier)))
                            (values
@@ -113,14 +113,14 @@
      (add-to-log '(%defcharacter ,name ,race ,@info))))
 
 
-;;; this doesn't work atm
-#||
-(defmacro make-action (name creature &key modifier body)
-  (multiple-value-bind (evaluation definition ftype-decl action-add action-call)
+;;; okay now this kinda works
+
+(defmacro make-action (name creature &key (modifier 0) body)
+  (multiple-value-bind (evaluation definition ftype-decl action-add)
       (%make-action name creature :modifier modifier :body body)
     `(let ((res ,evaluation))
+       (add-to-log ,(format nil "A new action ~s~%~s~%~s was defined" definition ftype-decl action-add))
        (add-to-log (format nil "~%;;~a performs an action: ~a with result(s): ~s~%"
                            ,(%sym-to-str creature) ,(%sym-to-str name) res))
        (add-to-log '(%make-action ,name ,creature :modifier ,modifier :body ,body))
        res)))
-||#
