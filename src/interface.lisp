@@ -119,8 +119,7 @@
   (multiple-value-bind (evaluation definition ftype-decl action-add)
       (%make-action name creature :modifier modifier :body body)
     `(let ((res ,evaluation))
-       (add-to-log ,(format nil "A new action ~s~%~s~%~s was defined" definition ftype-decl action-add))
+       (add-to-log ,(format nil ";;A new action~% ~s~%~s~%~s~%;;was defined" definition ftype-decl action-add))
        (add-to-log (format nil "~%;;~a performs an action: ~a with result(s): ~s~%"
                            ,(%sym-to-str creature) ,(%sym-to-str name) res))
-       (add-to-log '(%make-action ,name ,creature :modifier ,modifier :body ,body))
        res)))
