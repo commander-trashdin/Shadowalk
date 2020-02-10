@@ -20,6 +20,14 @@
 
 (in-package #:rpg)
 
+;; *system-place* describes project directory
+;; *session-log* should be the current session log file -- TODO
+;; *races* describes the current set of available races, should be read from a file
+;; *creatures* describe ...something, for now its just all the existing creatures -- TODO
+;; *items* describe existing items -- should be read from a file
+;; *actions* describe existing actions
+;; *skills* describe availiable skills, semi-fixed, since new skills are not added during the game. I read them from file as of now -- TODO
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *system-place* (asdf:system-source-directory 'rpg))
   (defparameter *session-log* (concatenate 'string (directory-namestring *system-place*) "log/session-log.lisp"))

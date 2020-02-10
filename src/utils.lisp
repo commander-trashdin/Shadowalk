@@ -20,6 +20,7 @@
 
 (in-package #:rpg)
 
+;; Making classes more typed, and defining useful types in here --
 
 (defmacro %defclass (name super decl slots)
   `(progn
@@ -48,6 +49,8 @@
       `null))
 
 
+;; Small utility functions --
+
 (defun symbol->keyword (symb)
   (intern (symbol-name symb) "KEYWORD"))
 
@@ -62,6 +65,27 @@
   (declare (optimize (safety 3) (debug 3)))
   (string-capitalize (symbol-name name)))
 
+(defun %print-status-effect (key value stream)
+  (declare (optimize (safety 3) (debug 3)))
+  (format stream "~s, time left ~s~%" key value))
+
+(defun %skill-list ()
+  (declare (optimize (safety 3) (debug 3)))
+  (let ((skill-list (make-hash-table :test 'eq)))
+    (loop :for skill :in *skills*
+          :do (setf (gethash skill skill-list) 0))
+   skill-list))
+
+(defun %read-log (address)
+  (with-open-file (stream address :direction :input :if-does-not-exist nil)
+    (read stream)))
+
+(declaim (ftype (function (creature &key (:skill-name symbol)) fixnum) get-skill))
+(defun get-skill (creature &key skill-name)
+  (declare (optimize (safety 3) (debug 3)))
+  (gethash skill-name (skill-list creature)))
+
+;; Main dice facilities -
 
 (declaim (ftype (function (&key (:d fixnum) (:times fixnum)
                                 (:modifiers (or list fixnum))) (or fixnum list)) %roll))
@@ -88,16 +112,8 @@
     (format t "Check of ~s dices vs ~s resulted in:~%" list border)
     res))
 
-(defun %print-status-effect (key value stream)
-  (declare (optimize (safety 3) (debug 3)))
-  (format stream "~s, time left ~s~%" key value))
 
-(defun %skill-list ()
-  (declare (optimize (safety 3) (debug 3)))
-  (let ((skill-list (make-hash-table :test 'eq)))
-    (loop :for skill :in *skills*
-          :do (setf (gethash skill skill-list) 0))
-   skill-list))
+;; Character priting, not sure what is it for --
 
 (defun %display (this &optional (stream *standard-output*))
   (if (symbolp this)
@@ -140,16 +156,6 @@
         :for item :across (inventory this)
         :do (format stream "~a, " item)
         :finally (format stream "~%")))
-
-(defun %read-log (address)
-  (with-open-file (stream address :direction :input :if-does-not-exist nil)
-    (read stream)))
-
-(declaim (ftype (function (creature &key (:skill-name symbol)) fixnum) get-skill))
-(defun get-skill (creature &key skill-name)
-  (declare (optimize (safety 3) (debug 3)))
-  (gethash skill-name (skill-list creature)))
-
 
 ;;;-------------------------------------------------------------------
 ;;; Errors section
@@ -210,7 +216,7 @@
       (format stream "Entity not found: ~a~%" (entity condition)))))
 
 
-(defmacro type-safe (list body)
+(defmacro error-handle (list body)
   `(handler-case ,body
      (error (e)
        (typecase e
@@ -287,4 +293,29 @@
     (lambda (condition stream)
       ;(declare (ignore condition))
       (format stream "~%The race ~a doesn't exist in our world. Please, chose one of the existing ones.~%" (%sym-to-str (wrong-race condition))))))
+||#
+
+
+#|| Weird stuff
+(defun rec-loop (conditions body additional-conditions)
+  (if conditions
+      (destructuring-bind (head . tail) conditions
+        (destructuring-bind (_ var place) head
+          (declare (ignore _))
+          (if tail
+              `(loop :for ,var :in ,place
+                     :append ,(rec-loop tail body additional-conditions))
+              `(loop :for ,var :in ,place
+                     :when (and ,@additional-conditions)
+                        :collect ,(rec-loop tail body additional-conditions)))))
+      body))
+
+(defmacro %seq-comprehension (elem-struct &rest conditions)
+  (let ((vars (loop :for cond :in conditions
+                    :when (eql (car cond) :from)
+                      :collect cond))
+        (other-cond (loop :for cond :in conditions
+                          :unless (eql (car cond) :from)
+                            :collect cond)))
+    (rec-loop vars elem-struct other-cond)))
 ||#
