@@ -7,14 +7,15 @@ A custom storyteller-based system, heavy development stage.
 
 Creatures can be defined like this:
 
-   ```common-lisp
+   ``` common-lisp
     (defcharacter Name race
      (stats (2 1 1 3 7 2 2 2 2))
      (size 2)
      (skills (:acrobatics 5 :running 5))
      (feat-list ())
      (inventory ())) 
-     ```
+   ```
+
 Stats go in order strength, agility, constituion, charisma, perception, intuition, will, logic, reaction.
 Skills do not have to be mentioned, if they are 0.
 Defines a new creature, adds it to the *creatures* hash-table
