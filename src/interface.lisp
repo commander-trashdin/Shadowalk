@@ -28,14 +28,14 @@
 
 
 
-(defmacro %defcharacter (name race &rest info)
+(defun %defcharacter (name race &rest info)
   (let ((%const 0) (%size 0) (%react 0) (%int 0))
     (error-handle
      (malformed-creation race-error)
      (progn
        (assert (typep race 'races) nil 'race-error :wrong-race race)         
        `(progn
-          (let ((this (make-instance 'creature :name (%sym-to-str ',name) :race ',race)))
+          (let ((this (make-instance 'creature :name ,(%sym-to-str name) :race ',race)))
             ,@(loop :for (slot . stats) :in info
                     :collect
                     (case slot
@@ -124,9 +124,9 @@ Defines a new creature, adds it to the *creatures* hash-table
  and adds %definition to the log file to avoid cyclic log inputs.
 "
   `(prog1
-       (%defcharacter ,name ,race ,@info)
-     (add-to-log (format nil "~%;;A new character ~a of ~a~p is born"
-                         (%sym-to-str ',name) (%sym-to-str ',race) 10))
+       ,(apply #'%defcharacter name race info)
+     (add-to-log ,(format nil "~%;;A new character ~a of ~a~p is born"
+                         (%sym-to-str name) (%sym-to-str race) 10))
      (add-to-log '(%defcharacter ,name ,race ,@info))))
 
 

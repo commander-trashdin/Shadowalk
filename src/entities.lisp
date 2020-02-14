@@ -24,7 +24,7 @@
 
 (deftype skill () `(member ,@*skills*))
 
-(%defclass %feat ()
+(%defclass feat ()
            (declare (optimize (safety 3) (debug 3)))
            ((parameters
              :type list
@@ -37,10 +37,10 @@
              :initform nil)))
 
 
-(defclass trait (%feat)
+(defclass trait (feat)
   ())
 
-(defclass drawback (%feat)
+(defclass drawback (feat)
   ())
 
 (%defclass item ()
