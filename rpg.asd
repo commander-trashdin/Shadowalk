@@ -4,7 +4,7 @@
   :description "Shadowalk"
   :author "thrashdin aun.sokolov@gmail.com>"
   :license  "CCA"
-  :version "0.0.2"
+  :version "0.0.9"
   :serial t
   :components ((:file "package")
                (:module "src"
@@ -13,4 +13,8 @@
                  (:file "world-state")
                  (:file "entities")
                  (:file "interface")))
-               (:module "log")))
+               (:module "log")
+               (:module "clim-gui"
+                :components
+                ((:file "prototype"))))
+  :depends-on ("mcclim"))

@@ -50018,3 +50018,128 @@
 (%DEFCHARACTER GENSYM HUMAN (STATS (2 1 1 3 7 2 2 2 2)) (SIZE 2)
                (SKILLS (ACROBATICS 5 RUNNING 5)) (TRAIT-LIST NIL)
                (DRAWBACK-LIST NIL) (FEAT-LIST NIL) (INVENTORY NIL))
+
+;;A new character Alex of Humans is born
+(%DEFCHARACTER ALEX HUMAN (STATS (2 1 1 3 7 2 2 2 2)) (SIZE 2)
+               (SKILLS (ACROBATICS 5 RUNNING 5)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (2 1 1 3 7 2 2 2 2)) (SIZE 2)
+               (SKILLS (ACROBATICS 5 RUNNING 5)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Alex of Humans is born
+(%DEFCHARACTER ALEX HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Alex of Humans is born
+(%DEFCHARACTER ALEX HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER LEX HUMAN (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER LEX HUMAN (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER LEX HUMAN (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Name of Humans is born
+(%DEFCHARACTER NAME HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER LEX HUMAN (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER Lex HUMAN (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Keks of Humans is born
+(%DEFCHARACTER Keks HUMAN (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Keks of Humans is born
+(%DEFCHARACTER Keks HUMAN 33 'M (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER Lex HUMAN 20 'W (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Lex of Humans is born
+(%DEFCHARACTER Lex HUMAN 20 'W (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Keks of Humans is born
+(%DEFCHARACTER Keks HUMAN 33 'M (STATS (1 1 1 1 1 1 1 1 1)) (SIZE 0)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Alex of Humans is born
+(%DEFCHARACTER Alex HUMAN 25 'M (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))
+
+;;A new character Vasya of Elfs is born
+(%DEFCHARACTER Vasya ELF 20 'M (STATS (2 3 4 5 6 7 8 9 10)) (SIZE 2)
+               (SKILLS (ACROBATICS 0 RUNNING 1)) (FEAT-LIST NIL)
+               (INVENTORY NIL))

@@ -28,14 +28,17 @@
 
 
 
-(defun %defcharacter (name race &rest info)
+(defun %defcharacter (name race age gender &rest info)
   (let ((%const 0) (%size 0) (%react 0) (%int 0))
     (error-handle
      (malformed-creation race-error)
      (progn
-       (assert (typep race 'races) nil 'race-error :wrong-race race)         
+       (assert (typep name 'string) nil 'malformed-creation :place name)
+       (assert (typep race 'races) nil 'race-error :wrong-race race)
+       (assert (typep age '(integer 0)) nil 'malformed-creation :place age)
+       (assert (symbolp gender) nil 'malformed-creation :place gender)
        `(progn
-          (let ((this (make-instance 'creature :name ,(%sym-to-str name) :race ',race)))
+          (let ((this (make-instance 'creature :name ,name :race ',race :age ,age :gender ',gender)))
             ,@(loop :for (slot . stats) :in info
                     :collect
                     (case slot
@@ -62,7 +65,7 @@
             (setf (max-health this) ,(+ 9 %const (* 4 %size)))
             (setf (cur-health this) ,(+ 9 %const (* 4 %size)))
             (setf (initiative this) ,(+ %react %int))
-            (setf (gethash ',name *creatures*) this)))))))
+            (setf (gethash ,name *creatures*) this)))))))
 
 
 (defun %make-action (name creature &key (modifier 0) body)
@@ -107,9 +110,9 @@
            `(,name ,(gethash creature *creatures*) ,modifier))))))
 
 
-(defmacro defcharacter (name race &rest info)
+(defmacro defcharacter (name race age gender &rest info)
   "Character definition look like this:
-   (defcharacter Name race
+   (defcharacter \"Name\" race
      (stats (2 1 1 3 7 2 2 2 2))
      (size 2)
      (skills (:acrobatics 5 :running 5))
@@ -124,10 +127,10 @@ Defines a new creature, adds it to the *creatures* hash-table
  and adds %definition to the log file to avoid cyclic log inputs.
 "
   `(prog1
-       ,(apply #'%defcharacter name race info)
+       ,(apply #'%defcharacter name race age gender info)
      (add-to-log ,(format nil "~%;;A new character ~a of ~a~p is born"
-                         (%sym-to-str name) (%sym-to-str race) 10))
-     (add-to-log '(%defcharacter ,name ,race ,@info))))
+                               name (%sym-to-str race) 10))
+     (add-to-log '(%defcharacter ,name ,race ,age ',gender ,@info))))
 
 
 

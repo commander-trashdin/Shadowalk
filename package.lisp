@@ -1,4 +1,4 @@
 ;;;; package.lisp
 
 (defpackage #:rpg
-  (:use #:cl))
+  (:use #:clim #:clim-lisp))

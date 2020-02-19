@@ -32,11 +32,13 @@
                          (slot-value ,name ',sl-name))
              :collect `(defun (setf ,sl-name) (new-val ,name)
                          ,decl
+                         (assert (typep new-val ',(getf rest :type t)) nil
+                                 'malformed-creation :place new-val)
                          (setf (slot-value ,name ',sl-name) new-val)))
      (declaim ,@(loop :for (sl-name . rest) :in slots
                       :for type := (getf rest :type t)
                       :collect `(ftype (function (,name) ,type) ,sl-name)
-                      :collect `(ftype (function (,type ,name) ,type) (setf ,sl-name))))))
+                      :collect `(ftype (function (t ,name) ,type) (setf ,sl-name))))))
 
 
 (deftype %fixed-list (type length)
@@ -143,14 +145,6 @@
   (loop :initially (format stream "Feats:~%")
         :for feat :across (feat-list this)
         :do (format stream "~a, " feat)
-        :finally (format stream "~%"))
-  (loop :initially (format stream "Traits:~%")
-        :for trait :across (trait-list this)
-        :do (format stream "~a, " trait)
-        :finally (format stream "~%"))
-  (loop :initially (format stream "Drawbacks:~%")
-        :for db :across (drawback-list this)
-        :do (format stream "~a, " db)
         :finally (format stream "~%"))
   (loop :initially (format stream "Inventory:~%")
         :for item :across (inventory this)
